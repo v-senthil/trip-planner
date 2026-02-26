@@ -6,6 +6,7 @@ server/node_modules/
 # ─── Build outputs ────────────────────────────
 client/dist/
 client/build/
+server/public/
 
 # ─── Environment variables ────────────────────
 .env

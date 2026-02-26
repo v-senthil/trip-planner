@@ -74,7 +74,7 @@ app.use('/api/settings', requireAuth, settingsRoutes);
 
 // ── Serve the Vite-built frontend in production ──────────────────────────
 // In production, the client build lives at ../client/dist (relative to server/)
-const clientDist = path.resolve(__dirname, '../../client/dist');
+const clientDist = path.resolve(__dirname, '../public');
 if (config.nodeEnv === 'production') {
   // Serve static assets (JS, CSS, images, etc.)
   app.use(express.static(clientDist));

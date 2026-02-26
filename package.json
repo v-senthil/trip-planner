@@ -7,7 +7,7 @@
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
     "build": "cd client && npm run build",
-    "build:render": "cd server && npm install && cd ../client && npm install --include=dev && npm run build",
+    "build:render": "cd server && npm install && cd ../client && npm install --include=dev && npm run build && cd .. && rm -rf server/public && mkdir -p server/public && cp -R client/dist/. server/public/",
     "start": "cd server && npm start",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install"
   },
