@@ -1,0 +1,26 @@
+# Render Blueprint — single service for both frontend + backend
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: trip-planner
+    runtime: node
+    plan: free                 # Change to "starter" ($7/mo) to avoid cold starts
+    buildCommand: npm run build:render
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      - key: GEMINI_API_KEY
+        sync: false            # Render will prompt you to enter the value
+      - key: OPENWEATHER_API_KEY
+        sync: false
+      - key: ENCRYPTION_SECRET
+        generateValue: true    # Render auto-generates a random string
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AUTH_EMAIL
+        value: senthil@gmail.com
+      - key: AUTH_PASSWORD
+        sync: false            # Enter manually — not committed to Git

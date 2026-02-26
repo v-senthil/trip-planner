@@ -9,6 +9,11 @@ const config = {
   port: parseInt(process.env.PORT || '3001', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+  // Comma-separated list of allowed CORS origins (GitHub Pages, custom domains, etc.)
+  corsOrigins: (process.env.CORS_ORIGINS || process.env.CLIENT_URL || 'http://localhost:5173')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean),
 
   // AI providers — keys loaded from .env, model selection from settings DB
   ai: {

@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import config from './config.js';
 import logger from './logger.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
@@ -16,6 +18,7 @@ import settingsRoutes from './routes/settingsRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import { requireAuth } from './middleware/authMiddleware.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 // Trust proxy (needed for express-rate-limit behind reverse proxies / ngrok)
@@ -25,9 +28,13 @@ app.set('trust proxy', 1);
 app.use(helmet());
 app.use(compression());
 
-// CORS
+// CORS — allow multiple origins (local dev + GitHub Pages + custom domains)
 app.use(cors({
-  origin: config.clientUrl,
+  origin: (origin, cb) => {
+    // Allow server-to-server (no origin) and any origin in the whitelist
+    if (!origin || config.corsOrigins.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: origin ${origin} not allowed`));
+  },
   credentials: true,
 }));
 
@@ -64,6 +71,21 @@ app.use('/api/weather', requireAuth, weatherRoutes);
 app.use('/api/currency', requireAuth, currencyRoutes);
 app.use('/api/db', requireAuth, dbRoutes);
 app.use('/api/settings', requireAuth, settingsRoutes);
+
+// ── Serve the Vite-built frontend in production ──────────────────────────
+// In production, the client build lives at ../client/dist (relative to server/)
+const clientDist = path.resolve(__dirname, '../../client/dist');
+if (config.nodeEnv === 'production') {
+  // Serve static assets (JS, CSS, images, etc.)
+  app.use(express.static(clientDist));
+
+  // SPA fallback — any non-API route returns index.html so React Router works
+  app.get('*', (req, res, next) => {
+    // Don't intercept /api/* — let those fall through to 404 handler
+    if (req.path.startsWith('/api/')) return next();
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
 
 // Error handling
 app.use(notFoundHandler);
