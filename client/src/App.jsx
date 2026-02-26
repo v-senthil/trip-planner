@@ -11,8 +11,11 @@ import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
 
 export default function App() {
+  // import.meta.env.BASE_URL is set by Vite's `base` config (e.g. "/trip-planner/")
+  const basename = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <AuthProvider>
         <Routes>
           {/* Public */}

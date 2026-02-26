@@ -1,4 +1,6 @@
-const API_BASE = '/api';
+// When the backend is hosted separately (e.g. GitHub Pages frontend + Railway backend),
+// set VITE_API_URL during the build to the full backend origin (e.g. https://my-api.up.railway.app/api).
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 const TOKEN_KEY = 'tp_auth_token';
 
 function getToken() {
@@ -7,9 +9,11 @@ function getToken() {
 
 function handleUnauthorized() {
   localStorage.removeItem(TOKEN_KEY);
-  // Navigate to login without importing React Router (works from any context)
-  if (window.location.pathname !== '/login') {
-    window.location.replace('/login');
+  // Respect the base path set by Vite (e.g. /trip-planner/)
+  const base = import.meta.env.BASE_URL || '/';
+  const loginPath = `${base}login`.replace('//', '/');
+  if (!window.location.pathname.endsWith('/login')) {
+    window.location.replace(loginPath);
   }
 }
 
